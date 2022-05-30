@@ -47,5 +47,6 @@ fun TemperatureHeader(
     Column() {
         Text(address)
         Text(temperature.toString())
+        Text("Test")
     }
 }
