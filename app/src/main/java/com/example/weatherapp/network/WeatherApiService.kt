@@ -12,7 +12,7 @@ import retrofit2.http.Path
 
 private const val BASE_URL =
     "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
-private const val QUERY_DATA = "?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Caddress%2CresolvedAddress%2Clatitude%2Clongitude%2Ctempmax%2Ctempmin%2Ctemp%2Cfeelslike%2Chumidity%2Cwindspeed%2Cwinddir%2Cuvindex%2Csunrise%2Csunset%2Cdescription%2Cicon&key=2YM68T2QCXTW94ESQVKNGJ4CJ&contentType=json"
+private const val QUERY_DATA = "?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Caddress%2CresolvedAddress%2Clatitude%2Clongitude%2Ctempmax%2Ctempmin%2Ctemp%2Cfeelslike%2Chumidity%2Cwindspeed%2Cwinddir%2Cuvindex%2Csunrise%2Csunset%2Cdescription%2Cicon&include=days%2Chours%2Cfcst%2Cremote%2Cobs%2Calerts%2Ccurrent&key=2YM68T2QCXTW94ESQVKNGJ4CJ&contentType=json"
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()

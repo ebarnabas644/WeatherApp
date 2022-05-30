@@ -24,7 +24,10 @@ android {
     }
 
     buildFeatures {
-        dataBinding true
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.2.0-beta02"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -56,4 +59,18 @@ dependencies {
     // Coil
     implementation "io.coil-kt:coil:1.1.1"
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
+    //Compose
+    // Integration with activities
+    implementation 'androidx.activity:activity-compose:1.4.0'
+    // Compose Material Design
+    implementation "androidx.compose.material:material:$compose_version"
+    // Animations
+    implementation "androidx.compose.animation:animation:$compose_version"
+    // Tooling support (Previews, etc.)
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    // Integration with ViewModels
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
+    // UI Tests
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 }
