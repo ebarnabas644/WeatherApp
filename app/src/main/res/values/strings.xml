@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+    <string name="daily_forecast">Daily forecast</string>
+    <string name="weekly_forecast">Weekly forecast</string>
+    <string name="min_max_temperature_display">%d°/%d°</string>
+    <string name="temperature">&#160;%d°</string>
 </resources>

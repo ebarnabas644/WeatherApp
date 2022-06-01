@@ -1,7 +1,7 @@
 package com.example.weatherapp.ui.main
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.*
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,30 +14,53 @@ enum class WeatherApiStatus { LOADING, ERROR, DONE }
 
 class WeatherViewModel : ViewModel() {
     private val _weather = MutableLiveData<Weather>()
-    val weather: LiveData<Weather> = _weather
-
+    private var _selectedAddress = MutableLiveData<String>("")
     private val _status = MutableLiveData<WeatherApiStatus>()
+    private val _missingAddress = MutableLiveData<Boolean>()
+    var addressList: MutableList<String> by mutableStateOf(mutableListOf())
+
+    val weather: LiveData<Weather> = _weather
+    val selectedAddress: LiveData<String> = _selectedAddress
     val status: LiveData<WeatherApiStatus> = _status
 
     init {
         Log.i("vm", "Creating vm")
+        setSelectedAddress("Budapest")
+        getWeatherData()
+    }
+
+    public fun addAddress(addressToAdd: String){
+        addressList.add(addressToAdd)
+    }
+
+    public fun removeAddress(addressToRemove: String){
+        addressList.remove(addressToRemove)
+    }
+
+    public fun setSelectedAddress(addressToSelect: String){
+        _selectedAddress.value = addressToSelect
         getWeatherData()
     }
 
     private fun getWeatherData() {
-        viewModelScope.launch {
+        if(_selectedAddress.value != "") {
             viewModelScope.launch {
-                _status.value = WeatherApiStatus.LOADING
-                try {
-                    Log.i("vm", "Loading data")
-                    _weather.value = WeatherApi.retrofitService.getWeather("Bremen")
-                    _status.value = WeatherApiStatus.DONE
-                    Log.i("vm", "Data loaded")
-                } catch (e: Exception) {
-                    _status.value = WeatherApiStatus.ERROR
-                    Log.i("vm", e.message.toString())
+                viewModelScope.launch {
+                    _status.value = WeatherApiStatus.LOADING
+                    try {
+                        Log.i("vm", "Loading data")
+                        _weather.value = WeatherApi.retrofitService.getWeather(_selectedAddress.value.toString())
+                        _status.value = WeatherApiStatus.DONE
+                        Log.i("vm", "Data loaded")
+                    } catch (e: Exception) {
+                        _status.value = WeatherApiStatus.ERROR
+                        Log.i("vm", e.message.toString())
+                    }
                 }
             }
+        }
+        else{
+
         }
     }
 

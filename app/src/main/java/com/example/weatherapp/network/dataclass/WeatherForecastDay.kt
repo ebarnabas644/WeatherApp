@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 
 data class WeatherForecastDay(
     val datetime: String,
+    val datetimeEpoch: Int,
     @Json(name = "tempmax") val tempMax: Double,
     @Json(name = "tempmin") val tempMin: Double,
     @Json(name = "temp") val avgTemp: Double,

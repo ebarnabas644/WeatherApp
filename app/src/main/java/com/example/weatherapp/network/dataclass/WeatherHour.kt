@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 
 data class WeatherHour(
     val datetime: String,
+    val datetimeEpoch: Int,
     val temp: Double,
     @Json(name = "feelslike") val feelsLike: Double,
     val humidity: Double,
