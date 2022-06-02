@@ -25,7 +25,7 @@ class WeatherViewModel : ViewModel() {
 
     init {
         Log.i("vm", "Creating vm")
-        setSelectedAddress("Budapest")
+        setSelectedAddress("Bremen")
         getWeatherData()
     }
 

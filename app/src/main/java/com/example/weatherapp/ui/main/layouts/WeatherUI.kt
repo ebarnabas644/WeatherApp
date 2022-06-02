@@ -126,31 +126,42 @@ fun DayForecastCard(
     val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.getDefault());
     val dateTime = Instant.ofEpochSecond(dateEpoch.toLong()).atZone(ZoneId.systemDefault())
     val hour = dateTime.format(DateTimeFormatter.ofPattern("h a").withLocale(Locale.ENGLISH))
-    Card(
-        elevation = 10.dp,
-        modifier = modifier.padding(5.dp),
-        contentColor = MaterialTheme.colors.onSurface){
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(6.dp)
-                .background(Color.Transparent)
+    val current = Calendar.getInstance()
+    val currentHour = current.get(Calendar.HOUR)
+    if (dateTime.hour > currentHour) {
+        Card(
+            elevation = 10.dp,
+            modifier = modifier.padding(5.dp),
+            contentColor = MaterialTheme.colors.onSurface
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(6.dp)
+                    .background(Color.Transparent)
             ) {
-            Text(
-                text = hour,
-                style = MaterialTheme.typography.h5)
-            /*Text(
+                Text(
+                    text = hour,
+                    style = MaterialTheme.typography.h5
+                )
+                /*Text(
                 text = monthAndDay,
                 style = MaterialTheme.typography.h5)*/
-            Image(
-                painter = painterResource(iconId),
-                contentDescription = null,
-                modifier = Modifier.size(80.dp))
-            Text(
-                text = LocalContext.current.resources.getString(R.string.temperature, temperature.toInt()),
-                style = MaterialTheme.typography.h5,
-                modifier = Modifier
-                    .paddingFromBaseline(10.dp)
-            )
+                Image(
+                    painter = painterResource(iconId),
+                    contentDescription = null,
+                    modifier = Modifier.size(80.dp),
+                    colorFilter = ColorFilter.tint(color = MaterialTheme.colors.onSurface)
+                )
+                Text(
+                    text = LocalContext.current.resources.getString(
+                        R.string.temperature,
+                        temperature.toInt()
+                    ),
+                    style = MaterialTheme.typography.h5,
+                    modifier = Modifier
+                        .paddingFromBaseline(10.dp)
+                )
+            }
         }
     }
 }
@@ -167,7 +178,6 @@ fun WeekForecastCard(
     val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.getDefault());
     val dateTime = Instant.ofEpochSecond(dateEpoch.toLong()).atZone(ZoneId.systemDefault())
     val day = dateTime.format(DateTimeFormatter.ofPattern("EE").withLocale(Locale.ENGLISH))
-
     Card(
         elevation = 10.dp,
         modifier =  modifier.fillMaxWidth().padding(6.dp),
@@ -188,7 +198,8 @@ fun WeekForecastCard(
                     Image(
                         painter = painterResource(R.drawable.ic_wi_humidity),
                         contentDescription = null,
-                        modifier = Modifier.size(40.dp))
+                        modifier = Modifier.size(40.dp),
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colors.onSurface))
                     Text(
                         text = humidity.toInt().toString(),
                         style = MaterialTheme.typography.h4
@@ -198,7 +209,8 @@ fun WeekForecastCard(
             Image(
                 painter = painterResource(iconId),
                 contentDescription = null,
-                modifier = Modifier.size(100.dp))
+                modifier = Modifier.size(100.dp),
+                colorFilter = ColorFilter.tint(color = MaterialTheme.colors.onSurface))
             Text(
                 text = LocalContext.current.resources.getString(R.string.min_max_temperature_display, maxTemp.toInt(), minTemp.toInt()),
                 style = MaterialTheme.typography.h3
@@ -234,10 +246,10 @@ fun WeekForecastColumn(
     LazyColumn(
         modifier = modifier
             .padding(horizontal = 10.dp)
-            .height(300.dp)
+            .height(450.dp)
     ){
         items(items = dataSource){
-            item -> WeekForecastCard(
+                item -> WeekForecastCard(
             dateEpoch = item.datetimeEpoch,
             iconId = R.drawable.ic_wi_day_sunny,
             minTemp = item.tempMin,
@@ -315,7 +327,7 @@ fun DayForecastRowPreview(){
 @Preview
 @Composable
 fun WeekForecastColumnPreview(){
-    WeatherAppTheme {
+    WeatherAppTheme(darkTheme = true) {
         WeekForecastColumn(
             dataSource = weekForecastTestDatasource
         )
