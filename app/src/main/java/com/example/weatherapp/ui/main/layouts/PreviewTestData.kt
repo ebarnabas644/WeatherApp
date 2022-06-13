@@ -1,5 +1,8 @@
 package com.example.weatherapp.ui.main.layouts
 
+import com.example.weatherapp.R
+import com.example.weatherapp.network.dataclass.PanelData
+import com.example.weatherapp.network.dataclass.Prediction
 import com.example.weatherapp.network.dataclass.WeatherForecastDay
 import com.example.weatherapp.network.dataclass.WeatherHour
 import java.text.DecimalFormat
@@ -37,3 +40,21 @@ val dayForecastTestDatasource = List(24){ i ->
         imageIcon = "cloudy"
     )
 }
+
+val searchTestDatasource = listOf<Prediction>(
+    Prediction("Budapest"),
+    Prediction("Bukarest"),
+    Prediction("Berlin"),
+    Prediction("Bremen"))
+
+val addressSelectionTestDatasource = listOf<String>(
+    "Budapest",
+    "Bukarest",
+    "Berlin",
+    "Bremen")
+
+val detailTestDatasource = listOf<PanelData>(
+    PanelData("Sunrise", "5:12", R.drawable.ic_wi_sunrise),
+    PanelData("Sunset", "20:12", R.drawable.ic_wi_sunset),
+    PanelData("Humidity", "52.2", R.drawable.ic_wi_humidity),
+)

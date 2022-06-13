@@ -72,4 +72,6 @@ dependencies {
     // UI Tests
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    // Swipe refresh
+    implementation "com.google.accompanist:accompanist-swiperefresh:0.24.10-beta"
 }

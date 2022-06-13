@@ -4,4 +4,20 @@
     <string name="weekly_forecast">Weekly forecast</string>
     <string name="min_max_temperature_display">%d°/%d°</string>
     <string name="temperature">&#160;%d°</string>
+    <string name="sidebar_title">Favourites</string>
+    <string name="search_address_text">Enter location name</string>
+    <string name="navbar_today">Today</string>
+    <string name="navbar_next_2_week">Next 14 day</string>
+    <string name="navbar_search">Search</string>
+    <string name="detail_panel_title">Details</string>
+    <string name="sunrise_title">Sunrise</string>
+    <string name="sunset_title">Sunset</string>
+    <string name="humidity_title">Humidity</string>
+    <string name="windSpeed_title">Wind speed</string>
+    <string name="windDirection_title">Wind direction</string>
+    <string name="uvIndex_title">Uv index</string>
+    <string name="wind_direction">%s°</string>
+    <string name="wind_speed_metric">%s km/h</string>
+    <string name="wind_speed_imperial">%s mp/h</string>
+    <string name="humidity_detail">%s %%</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.weatherapp.network
 
+import com.example.weatherapp.network.dataclass.Predictions
 import com.example.weatherapp.network.dataclass.Weather
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -13,6 +14,8 @@ import retrofit2.http.Path
 private const val BASE_URL =
     "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/"
 private const val QUERY_DATA = "?unitGroup=metric&elements=datetime%2CdatetimeEpoch%2Caddress%2CresolvedAddress%2Clatitude%2Clongitude%2Ctempmax%2Ctempmin%2Ctemp%2Cfeelslike%2Chumidity%2Cwindspeed%2Cwinddir%2Cuvindex%2Csunrise%2Csunset%2Cdescription%2Cicon&include=days%2Chours%2Cfcst%2Cremote%2Cobs%2Calerts%2Ccurrent&key=2YM68T2QCXTW94ESQVKNGJ4CJ&contentType=json"
+private const val AUTOCOMPLETE_BASE_URL = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input="
+private const val AUTOCOMPLETE_QUERY_DATA = "&types=geocode&key=AIzaSyCNMRHO8hSI88ZpBkTa1zPqv30V_5EZT94"
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
