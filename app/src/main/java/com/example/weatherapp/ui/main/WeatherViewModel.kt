@@ -2,38 +2,39 @@ package com.example.weatherapp.ui.main
 
 import android.util.Log
 import androidx.compose.runtime.*
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.network.WeatherApi
-import com.example.weatherapp.network.dataclass.Weather
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.network.AutocompleteApi
-import com.example.weatherapp.network.dataclass.Prediction
-import com.example.weatherapp.network.dataclass.Predictions
+import com.example.weatherapp.network.dataclass.*
 
 enum class WeatherApiStatus { LOADING, ERROR, DONE }
 
-class WeatherViewModel : ViewModel() {
+class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewModel() {
     var weatherApiStatus by mutableStateOf(WeatherApiStatus.LOADING)
     var weather by mutableStateOf(Weather())
     var autocomplete by mutableStateOf(Predictions())
     var autocompleteText by mutableStateOf("")
     var selectedAddress by mutableStateOf("")
-    private val _missingAddress = MutableLiveData<Boolean>()
     private val _addressList = mutableStateListOf<String>()
     var isRefreshing by mutableStateOf(false)
+    private val weatherList = mutableStateOf(emptyList<Weather>())
+    private var databaseEmpty = true
 
     val addressList: List<String> = _addressList
 
+    class Factory(private val repo: WeatherRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            return WeatherViewModel(repo) as T
+        }
+    }
+
     init {
         Log.i("vm", "Creating vm")
-        addAddress("Bremen")
-        addAddress("Budapest")
-        setSelected("Bremen")
-        getWeatherData()
+        loadFromDatabase()
         getAutocomplete()
 
     }
@@ -44,13 +45,39 @@ class WeatherViewModel : ViewModel() {
         }
     }
 
+    private fun loadFromDatabase(){
+        viewModelScope.launch {
+            weatherRepository.getWeatherData()
+            weatherList.value = weatherRepository.getWeatherData()
+            databaseEmpty = weatherList.value.isEmpty()
+            if(databaseEmpty){
+                setSelected("Bremen")
+            }
+            else {
+                var findSelectedAddress = ""
+                _addressList.clear()
+                for(item in weatherList.value){
+                    addAddress(item.address)
+                    if (item.address == selectedAddress){
+                        findSelectedAddress = selectedAddress
+                    }
+                }
+                if(findSelectedAddress == ""){
+                    setSelected(weatherList.value[0].address)
+                    getWeatherData(weatherList.value[0].address)
+                }
+            }
+        }
+    }
+
     fun removeAddress(addressToRemove: String){
-        _addressList.remove(addressToRemove)
+        weatherRepository.deleteWeather(weatherList.value.first { it.address == addressToRemove })
+        loadFromDatabase()
     }
 
     fun setSelected(addressToSelect: String){
         selectedAddress = addressToSelect
-        getWeatherData()
+        getWeatherData(addressToSelect)
     }
 
     fun updateAutocompleteList(value: String){
@@ -60,15 +87,14 @@ class WeatherViewModel : ViewModel() {
 
     fun refresh(){
         isRefreshing = true
-        getWeatherData()
+        getWeatherData(selectedAddress, true)
         isRefreshing = false
     }
 
     fun searchAddress(address: Prediction){
         resetAutofill()
         selectedAddress = address.structure.main
-        getWeatherData()
-        addAddress(selectedAddress)
+        getWeatherData(selectedAddress)
     }
 
     fun resetAutofill(){
@@ -76,40 +102,42 @@ class WeatherViewModel : ViewModel() {
     }
 
 
-    private fun getWeatherData() {
-        if(selectedAddress != "") {
-            viewModelScope.launch {
-                viewModelScope.launch {
-                    weatherApiStatus = WeatherApiStatus.LOADING
-                    try {
-                        Log.i("vm", "Loading data")
-                        weather = WeatherApi.retrofitService.getWeather(selectedAddress.toString())
-                        weatherApiStatus = WeatherApiStatus.DONE
-                        Log.i("vm", "Data loaded ${selectedAddress.toString()}")
-                    } catch (e: Exception) {
-                        weatherApiStatus= WeatherApiStatus.ERROR
-                        Log.i("vm", e.message.toString())
+    private fun getWeatherData(address: String, isRefreshing: Boolean = false) {
+        viewModelScope.launch {
+            weatherApiStatus = WeatherApiStatus.LOADING
+            try {
+                Log.i("vm", "Loading data")
+                for(item in weatherList.value){
+                    if (item.address == address){
+                        weather = item
+                        break;
                     }
                 }
+                if (weather.address != address || isRefreshing){
+                    Log.i("vm", "Data not found in database/refreshing, loading from api.")
+                    weather = WeatherApi.retrofitService.getWeather(address)
+                    weatherRepository.insertWeather(weather)
+                    loadFromDatabase()
+                }
+                weatherApiStatus = WeatherApiStatus.DONE
+                Log.i("vm", "Data loaded $address")
+            } catch (e: Exception) {
+                weatherApiStatus = WeatherApiStatus.ERROR
+                Log.i("vm", e.message.toString())
             }
-        }
-        else{
-
         }
     }
 
     private fun getAutocomplete(){
         if(autocompleteText != "") {
             viewModelScope.launch {
-                viewModelScope.launch {
-                    try {
-                        Log.i("vm", "Loading data")
-                        autocomplete =
-                            AutocompleteApi.retrofitService.getAutocomplete(autocompleteText)
-                        Log.i("vm", "Autocomplete loaded")
-                    } catch (e: Exception) {
-                        Log.i("vm", e.message.toString())
-                    }
+                try {
+                    Log.i("vm", "Loading data")
+                    autocomplete =
+                        AutocompleteApi.retrofitService.getAutocomplete(autocompleteText)
+                    Log.i("vm", "Autocomplete loaded")
+                } catch (e: Exception) {
+                    Log.i("vm", e.message.toString())
                 }
             }
         }

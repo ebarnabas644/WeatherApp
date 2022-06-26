@@ -1,6 +1,30 @@
 package com.example.weatherapp.network.dataclass
 
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.moshi.Json
+import java.lang.reflect.Type
+
+//https://stackoverflow.com/questions/44815784/room-persistent-database-how-to-insert-list-of-items-into-db-when-it-has-no-pr
+class WeatherCurrentDayTypeConverters {
+    @TypeConverter
+    fun stringToWeatherCurrentDay(json: String?): WeatherCurrentDay {
+        val gson = Gson()
+        val type: Type =
+            object : TypeToken<WeatherCurrentDay?>() {}.type
+        return gson.fromJson(json, type)
+    }
+
+    @TypeConverter
+    fun weatherCurrentDayToString(item: WeatherCurrentDay?): String {
+        val gson = Gson()
+        val type: Type =
+            object : TypeToken<WeatherCurrentDay?>() {}.type
+        return gson.toJson(item, type)
+    }
+}
 
 data class WeatherCurrentDay(
     val datetime: String = "",
