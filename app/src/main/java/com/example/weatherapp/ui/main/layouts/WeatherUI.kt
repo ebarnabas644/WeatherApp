@@ -3,7 +3,10 @@ package com.example.weatherapp.ui.main.layouts
 import com.example.weatherapp.R
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.*
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
@@ -72,6 +76,7 @@ fun WeatherScreen(
         PanelData(stringResource(R.string.windDirection_title), (LocalContext.current.resources.getString(R.string.wind_direction, (weather.current.winDirection ?: "N/A").toString())), iconId = R.drawable.ic_wi_wind_deg, rotation = (weather.current.winDirection ?: 0.0)),
         PanelData(stringResource(R.string.uvIndex_title), weather.current.uvIndex.toString(), iconId = R.drawable.ic_wi_day_sunny)
     )
+    val alpha: Float by animateFloatAsState(if (!isLoading) 1f else 0.0f)
     Column(modifier = modifier
         .verticalScroll(rememberScrollState())
         .background(
@@ -86,19 +91,19 @@ fun WeatherScreen(
             temperature = weather.current.temp,
             address = weather.address,
             iconId = ConvertIconToEnum(weather.current.imageIcon).iconId,
-            modifier = modifier,
+            modifier = Modifier.alpha(alpha),
             isLoading = isLoading
         )
         InfoSection(title = R.string.daily_forecast) {
             DayForecastRow(
                 dataSource = weather.days[0].hours,
-                modifier = modifier,
+                modifier = Modifier.alpha(alpha),
                 isLoading = isLoading)
         }
         InfoSection(title = R.string.detail_panel_title) {
             DetailPanel(
                 data = panelData,
-                modifier = modifier,
+                modifier = modifier.alpha(alpha),
                 isLoading = isLoading)
         }
     }
@@ -115,15 +120,18 @@ fun TemperatureHeader(
     val textStyleStart = MaterialTheme.typography.h4
     var readyToDraw by remember { mutableStateOf(false) }
     var textStyle by remember { mutableStateOf(textStyleStart) }
-    if (isLoading){
+    /*if (isLoading){
         TemperatureHeaderLoading(modifier)
     }
-    else{
+    else{*/
+    val alpha: Float by animateFloatAsState(if (!isLoading) 1f else 0.0f)
+    Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp)) {
+                .padding(horizontal = 12.dp)
+        ) {
             Text(
                 text = LocalContext.current.resources.getString(
                     R.string.temperature,
@@ -221,13 +229,13 @@ fun DayForecastCard(
         val backgroundColor = MaterialTheme.colors.background
         Card(
             elevation = 0.dp,
-            modifier = modifier.padding(5.dp),
+            modifier = Modifier.padding(5.dp),
             contentColor = contentColor,
             backgroundColor = backgroundColor
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
+                modifier = modifier
                     .padding(6.dp)
             ) {
                 Text(
@@ -267,7 +275,7 @@ fun DayForecastCardLoading(
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = keyframes {
-                durationMillis = 500
+                durationMillis = 2000
                 0.7f at 500
             },
             repeatMode = RepeatMode.Reverse
@@ -315,21 +323,15 @@ fun DayForecastRow(
     isLoading: Boolean = false
 ){
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 10.dp),
-        modifier = modifier
+        contentPadding = PaddingValues(horizontal = 10.dp)
     ){
         items(items = dataSource.filter { i -> (i.datetimeEpoch / 3600) % 3 == 2 }){
             item ->
-                if(isLoading){
-                    DayForecastCardLoading()
-                }
-                else {
-                        DayForecastCard(
-                            dateEpoch = item.datetimeEpoch,
-                            iconId = ConvertIconToEnum(item.imageIcon.toString()).iconId,
-                            temperature = item.temp
-                        )
-                    }
+                DayForecastCard(
+                    dateEpoch = item.datetimeEpoch,
+                    iconId = ConvertIconToEnum(item.imageIcon.toString()).iconId,
+                    temperature = item.temp,
+                    modifier = modifier)
         }
     }
 }
@@ -344,23 +346,19 @@ fun DetailPanel(
         elevation = 0.dp,
         contentColor = MaterialTheme.colors.onSurface,
         backgroundColor = MaterialTheme.colors.background,
-        modifier = modifier.padding(vertical =  5.dp, horizontal = 15.dp)
+        modifier = Modifier.padding(vertical =  5.dp, horizontal = 15.dp)
     ){
         Column() {
             data.forEach{ item ->
                 val isLastItem = data[data.size - 1] == item
-                if(isLoading){
-                    DetailPanelItemLoading(lastItem = isLastItem)
-                }
-                else {
                     DetailPanelItem(
                         title = item.title,
                         data = item.data,
                         iconId = item.iconId,
                         rotation = item.rotation,
-                        lastItem = isLastItem
+                        lastItem = isLastItem,
+                        modifier = modifier
                     )
-                }
             }
         }
     }
@@ -401,7 +399,7 @@ fun DetailPanelItem(
         }
         if (!lastItem) {
             Divider(
-                modifier.padding(horizontal = 15.dp)
+                Modifier.padding(horizontal = 15.dp)
             )
         }
     }
