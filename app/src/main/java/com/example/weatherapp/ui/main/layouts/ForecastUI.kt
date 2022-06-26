@@ -116,10 +116,9 @@ fun WeekForecastCard(
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(12.dp)
+            modifier = modifier.padding(12.dp)
         ) {
-            Column(modifier = modifier
-            ){
+            Column{
                 Text(
                     text = day,
                     style = MaterialTheme.typography.h4
