@@ -1,17 +1,32 @@
 package com.example.weatherapp.network.dataclass
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.room.*
 import com.squareup.moshi.Json
 
+@Entity(tableName = "Weather")
 data class Weather(
-    val latitude: Double,
-    val longitude: Double,
-    val resolvedAddress: String,
-    val address: String,
-    @Json(name = "description") val forecastDescription: String,
-    val days: List<WeatherForecastDay>,
-    val alerts: List<WeatherAlert>,
-    @Json(name = "currentConditions") val current: WeatherCurrentDay
+    @ColumnInfo(name = "latitude")
+    val latitude: Double = 0.0,
+
+    @ColumnInfo(name = "longitude")
+    val longitude: Double = 0.0,
+
+    @PrimaryKey()
+    val resolvedAddress: String = "",
+
+    @ColumnInfo(name = "address")
+    val address: String = "",
+
+    @ColumnInfo(name = "description")
+    @Json(name = "description") val forecastDescription: String = "",
+
+    @ColumnInfo(name = "forecastDays")
+    val days: List<WeatherForecastDay> = List(1){ WeatherForecastDay() },
+
+    @ColumnInfo(name = "alerts")
+    val alerts: List<WeatherAlert> = List(1){ WeatherAlert() },
+
+    @Json(name = "currentConditions")
+    @ColumnInfo(name = "currentDay")
+    val current: WeatherCurrentDay = WeatherCurrentDay()
     )
