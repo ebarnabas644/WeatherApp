@@ -5,7 +5,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
-
+//https://www.raywenderlich.com/24509368-repository-pattern-with-jetpack-compose
 class WeatherRepository(private val weatherDao: WeatherDao) {
 
     var result: Weather = Weather()

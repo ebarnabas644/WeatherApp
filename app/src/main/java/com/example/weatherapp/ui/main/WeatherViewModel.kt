@@ -26,6 +26,7 @@ class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewM
 
     val addressList: List<String> = _addressList
 
+    //https://mahendranv.github.io/posts/viewmodel-store/
     class Factory(private val repo: WeatherRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return WeatherViewModel(repo) as T
@@ -63,8 +64,10 @@ class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewM
                     }
                 }
                 if(findSelectedAddress == ""){
-                    setSelected(weatherList.value[0].address)
-                    getWeatherData(weatherList.value[0].address)
+                    if(weatherList.value.isNotEmpty()) {
+                        setSelected(weatherList.value[0].address)
+                        getWeatherData(weatherList.value[0].address)
+                    }
                 }
             }
         }

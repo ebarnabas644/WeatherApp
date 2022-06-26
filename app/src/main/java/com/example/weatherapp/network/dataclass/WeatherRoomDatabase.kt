@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
+//https://www.answertopia.com/jetpack-compose/a-jetpack-compose-room-database-and-repository-tutorial/
 @Database(entities = [Weather::class], version = 1, exportSchema = false)
 @TypeConverters(WeatherAlertTypeConverters::class, WeatherForecastDayTypeConverters::class, WeatherHourTypeConverters::class, WeatherCurrentDayTypeConverters::class)
 abstract class WeatherRoomDatabase : RoomDatabase() {
