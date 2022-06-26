@@ -102,6 +102,7 @@ class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewM
 
     fun resetAutofill(){
         autocompleteText = ""
+        autocomplete = Predictions()
     }
 
 
