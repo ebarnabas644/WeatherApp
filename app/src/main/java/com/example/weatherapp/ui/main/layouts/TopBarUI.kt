@@ -91,7 +91,7 @@ fun TitleBar(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(horizontal = 30.dp)
-                .widthIn(0.dp, 200.dp)
+                .fillMaxWidth(.7f)
         ) {
             Icon(
                 Icons.Filled.LocationOn,
