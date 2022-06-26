@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
@@ -52,6 +53,7 @@ fun ForecastScreen(
     isLoading: Boolean = false
 )
 {
+    val alpha: Float by animateFloatAsState(if (!isLoading) 1f else 0.0f)
     Column(
         modifier = Modifier
             .background(
@@ -67,8 +69,7 @@ fun ForecastScreen(
         WeekForecastColumn(
             dataSource = weather.days,
             description = weather.forecastDescription,
-            modifier = Modifier,
-            isLoading = isLoading)
+            modifier = Modifier.alpha(alpha))
     }
 }
 
@@ -79,7 +80,7 @@ fun DescriptionPanel(
 ){
     Card(
         elevation = 0.dp,
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(6.dp),
         contentColor = MaterialTheme.colors.onSurface,
@@ -147,7 +148,7 @@ fun WeekForecastCard(
     val day = dateTime.format(DateTimeFormatter.ofPattern("EE").withLocale(Locale.ENGLISH))
     Card(
         elevation = 0.dp,
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(6.dp),
         contentColor = MaterialTheme.colors.onSurface,
@@ -158,7 +159,7 @@ fun WeekForecastCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(12.dp)
         ) {
-            Column(
+            Column(modifier = modifier
             ){
                 Text(
                     text = day,
@@ -232,35 +233,27 @@ fun WeekForecastCardLoading(
 fun WeekForecastColumn(
     dataSource: List<WeatherForecastDay>,
     description: String,
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    modifier: Modifier = Modifier
 ){
     LazyColumn(
-        modifier = modifier
+        modifier = Modifier
             .padding(horizontal = 10.dp)
     ){
         item{
-            if(isLoading){
-                DescriptionPanelLoading()
-            }
-            else {
-                DescriptionPanel(description = description)
-            }
-        }
-        items(items = dataSource){
-                item ->
-            if(isLoading){
-                WeekForecastCardLoading()
-            }
-            else {
-                WeekForecastCard(
-                    dateEpoch = item.datetimeEpoch,
-                    iconId = ConvertIconToEnum(item.imageIcon).iconId,
-                    minTemp = item.tempMin,
-                    maxTemp = item.tempMax,
-                    humidity = item.avgHumidity
+            DescriptionPanel(
+                description = description,
+                modifier = modifier
                 )
-            }
+        }
+        items(items = dataSource){ item ->
+            WeekForecastCard(
+                dateEpoch = item.datetimeEpoch,
+                iconId = ConvertIconToEnum(item.imageIcon).iconId,
+                minTemp = item.tempMin,
+                maxTemp = item.tempMax,
+                humidity = item.avgHumidity,
+                modifier = modifier
+            )
         }
     }
 }
@@ -285,8 +278,7 @@ fun WeekForecastColumnPreview(){
     WeatherAppTheme(darkTheme = true) {
         WeekForecastColumn(
             dataSource = weekForecastTestDatasource,
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam quis ipsum odio. Aliquam ultricies, leo et blandit pulvinar, ex dui ornare nunc, ut auctor enim nibh vel velit. In finibus mi quis ipsum suscipit aliquet. Vestibulum hendrerit dui nec diam pulvinar, ut sodales mi mollis. Sed fermentum accumsan nisi eget cursus. Quisque at lacinia metus, luctus gravida risus. In suscipit condimentum nisl. ",
-            isLoading = false
+            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam quis ipsum odio. Aliquam ultricies, leo et blandit pulvinar, ex dui ornare nunc, ut auctor enim nibh vel velit. In finibus mi quis ipsum suscipit aliquet. Vestibulum hendrerit dui nec diam pulvinar, ut sodales mi mollis. Sed fermentum accumsan nisi eget cursus. Quisque at lacinia metus, luctus gravida risus. In suscipit condimentum nisl. "
         )
     }
 }
