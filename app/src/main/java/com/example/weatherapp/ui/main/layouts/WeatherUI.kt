@@ -167,47 +167,6 @@ fun TemperatureHeader(
 }
 
 @Composable
-fun TemperatureHeaderLoading(
-    modifier: Modifier = Modifier){
-    val infiniteTransition = rememberInfiniteTransition()
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = keyframes {
-                durationMillis = 500
-                0.7f at 500
-            },
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .width(100.dp)
-                .height(100.dp)
-                .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-        )
-        Spacer(modifier = Modifier.padding(vertical = 6.dp))
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-        )
-        Spacer(modifier = Modifier.padding(vertical = 6.dp))
-        Box(
-            modifier = Modifier
-                .width(200.dp)
-                .height(50.dp)
-                .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-        )
-    }
-}
-
-@Composable
 fun DayForecastCard(
     dateEpoch: Int,
     @DrawableRes iconId: Int,
@@ -263,57 +222,6 @@ fun DayForecastCard(
             }
         }
     //}
-}
-
-@Composable
-fun DayForecastCardLoading(
-    modifier: Modifier = Modifier
-){
-    val infiniteTransition = rememberInfiniteTransition()
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = keyframes {
-                durationMillis = 2000
-                0.7f at 500
-            },
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-    Card(
-        elevation = 0.dp,
-        modifier = modifier.padding(5.dp),
-        contentColor = MaterialTheme.colors.onSurface,
-        backgroundColor = MaterialTheme.colors.background
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(10.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(72.dp)
-                    .height(30.dp)
-                    .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-            )
-            Spacer(modifier = Modifier.padding(vertical = 6.dp))
-            Box(
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-            )
-            Spacer(modifier = Modifier.padding(vertical = 6.dp))
-            Box(
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(30.dp)
-                    .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-            )
-        }
-    }
 }
 
 @Composable
@@ -400,51 +308,6 @@ fun DetailPanelItem(
         if (!lastItem) {
             Divider(
                 Modifier.padding(horizontal = 15.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun DetailPanelItemLoading(
-    lastItem: Boolean,
-    modifier: Modifier = Modifier
-){
-    val infiniteTransition = rememberInfiniteTransition()
-    val alpha by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = keyframes {
-                durationMillis = 500
-                0.7f at 500
-            },
-            repeatMode = RepeatMode.Reverse
-        )
-    )
-    Column() {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier
-                .padding(horizontal = 10.dp, vertical = 6.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-            )
-            Spacer(modifier = Modifier.padding(horizontal = 6.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(32.dp)
-                    .background(MaterialTheme.colors.onSurface.copy(alpha = alpha))
-            )
-        }
-        if (!lastItem) {
-            Divider(
-                modifier.padding(horizontal = 15.dp)
             )
         }
     }
