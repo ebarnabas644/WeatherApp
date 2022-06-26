@@ -1,52 +1,41 @@
 package com.example.weatherapp.ui.main.layouts
 
-import com.example.weatherapp.R
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.*
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.weatherapp.ui.main.WeatherViewModel
-import androidx.compose.ui.Alignment
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.weatherapp.WeatherScreen
+import com.example.weatherapp.R
 import com.example.weatherapp.network.dataclass.PanelData
 import com.example.weatherapp.network.dataclass.Weather
-import com.example.weatherapp.network.dataclass.WeatherForecastDay
 import com.example.weatherapp.network.dataclass.WeatherHour
 import com.example.weatherapp.ui.icons.ConvertIconToEnum
 import com.example.weatherapp.ui.theme.WeatherAppTheme
-import kotlinx.coroutines.CoroutineScope
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.*
 
 @Composable
@@ -68,11 +57,11 @@ fun WeatherScreen(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
 ){
-    val panelData = listOf<PanelData>(
+    val panelData = listOf(
         PanelData(stringResource(R.string.sunrise_title), weather.current.sunrise, iconId = R.drawable.ic_wi_sunrise),
         PanelData(stringResource(R.string.sunset_title), weather.current.sunset, iconId = R.drawable.ic_wi_sunset),
-        PanelData(stringResource(R.string.humidity_title), (LocalContext.current.resources.getString(R.string.humidity_detail, (weather.current.humidity ?: "N/A").toString())), iconId = R.drawable.ic_wi_humidity),
-        PanelData(stringResource(R.string.windSpeed_title), (LocalContext.current.resources.getString(R.string.wind_speed_metric, (weather.current.windSpeed ?: "N/A").toString())).toString(), iconId = R.drawable.ic_wi_windy),
+        PanelData(stringResource(R.string.humidity_title), (LocalContext.current.resources.getString(R.string.humidity_detail, weather.current.humidity.toString())), iconId = R.drawable.ic_wi_humidity),
+        PanelData(stringResource(R.string.windSpeed_title), (LocalContext.current.resources.getString(R.string.wind_speed_metric, (weather.current.windSpeed ?: "N/A").toString())), iconId = R.drawable.ic_wi_windy),
         PanelData(stringResource(R.string.windDirection_title), (LocalContext.current.resources.getString(R.string.wind_direction, (weather.current.winDirection ?: "N/A").toString())), iconId = R.drawable.ic_wi_wind_deg, rotation = (weather.current.winDirection ?: 0.0)),
         PanelData(stringResource(R.string.uvIndex_title), weather.current.uvIndex.toString(), iconId = R.drawable.ic_wi_day_sunny)
     )
@@ -91,20 +80,17 @@ fun WeatherScreen(
             temperature = weather.current.temp,
             address = weather.address,
             iconId = ConvertIconToEnum(weather.current.imageIcon).iconId,
-            modifier = Modifier.alpha(alpha),
-            isLoading = isLoading
+            modifier = Modifier.alpha(alpha)
         )
         InfoSection(title = R.string.daily_forecast) {
             DayForecastRow(
                 dataSource = weather.days[0].hours,
-                modifier = Modifier.alpha(alpha),
-                isLoading = isLoading)
+                modifier = Modifier.alpha(alpha))
         }
         InfoSection(title = R.string.detail_panel_title) {
             DetailPanel(
                 data = panelData,
-                modifier = modifier.alpha(alpha),
-                isLoading = isLoading)
+                modifier = modifier.alpha(alpha))
         }
     }
 }
@@ -114,8 +100,7 @@ fun TemperatureHeader(
     address: String,
     temperature: Double,
     @DrawableRes iconId: Int,
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    modifier: Modifier = Modifier
 ){
     val textStyleStart = MaterialTheme.typography.h4
     var readyToDraw by remember { mutableStateOf(false) }
@@ -124,7 +109,6 @@ fun TemperatureHeader(
         TemperatureHeaderLoading(modifier)
     }
     else{*/
-    val alpha: Float by animateFloatAsState(if (!isLoading) 1f else 0.0f)
     Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,16 +158,8 @@ fun DayForecastCard(
     modifier: Modifier = Modifier
 )
 {
-    //val formattedDate = LocalDate.parse(date, DateTimeFormatter.ISO_DATE)
-    /*val weekDay = formattedDate.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
-    val monthAndDay = formattedDate.format(DateTimeFormatter.ofPattern("MM.dd"))*/
-    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.getDefault());
     val dateTime = Instant.ofEpochSecond(dateEpoch.toLong()).atZone(ZoneId.systemDefault())
     val hour = dateTime.format(DateTimeFormatter.ofPattern("h a").withLocale(Locale.ENGLISH))
-    val hour24 = dateTime.format(DateTimeFormatter.ofPattern("H").withLocale(Locale.ENGLISH)).toInt()
-    val current = Calendar.getInstance()
-    val currentHour = current.get(Calendar.HOUR_OF_DAY)
-    //if (dateTime.hour > currentHour) {
         val contentColor = MaterialTheme.colors.onSurface
         val backgroundColor = MaterialTheme.colors.background
         Card(
@@ -227,8 +203,7 @@ fun DayForecastCard(
 @Composable
 fun DayForecastRow(
     dataSource: List<WeatherHour>,
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    modifier: Modifier = Modifier
 ){
     LazyRow(
         contentPadding = PaddingValues(horizontal = 10.dp)
@@ -247,8 +222,7 @@ fun DayForecastRow(
 @Composable
 fun DetailPanel(
     data: List<PanelData>,
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false
+    modifier: Modifier = Modifier
 ){
     Card(
         elevation = 0.dp,
@@ -256,7 +230,7 @@ fun DetailPanel(
         backgroundColor = MaterialTheme.colors.background,
         modifier = Modifier.padding(vertical =  5.dp, horizontal = 15.dp)
     ){
-        Column() {
+        Column {
             data.forEach{ item ->
                 val isLastItem = data[data.size - 1] == item
                     DetailPanelItem(
@@ -281,7 +255,7 @@ fun DetailPanelItem(
     modifier: Modifier = Modifier,
     rotation: Double = 0.0
 ){
-    Column() {
+    Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = modifier
@@ -339,8 +313,7 @@ fun TemperatureHeaderPreview(){
         TemperatureHeader(
             address = "Bremen",
             temperature = 23.1,
-            iconId = R.drawable.ic_wi_day_sunny,
-            isLoading = false)
+            iconId = R.drawable.ic_wi_day_sunny)
     }
 }
 
@@ -361,8 +334,7 @@ fun DayCardPreview(){
 fun DayForecastRowPreview(){
     WeatherAppTheme {
         DayForecastRow(
-            dataSource = dayForecastTestDatasource,
-            isLoading = false
+            dataSource = dayForecastTestDatasource
         )
     }
 }
@@ -383,7 +355,7 @@ fun InfoSectionPreview(){
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DetailPanelItemPreview(){
-    WeatherAppTheme() {
+    WeatherAppTheme {
         DetailPanelItem(
             title = detailTestDatasource[0].title,
             data = detailTestDatasource[0].data,
@@ -395,9 +367,8 @@ fun DetailPanelItemPreview(){
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun DetailPanelPreview(){
-    WeatherAppTheme() {
+    WeatherAppTheme {
         DetailPanel(
-            data = detailTestDatasource,
-            isLoading = false)
+            data = detailTestDatasource)
     }
 }

@@ -2,27 +2,20 @@ package com.example.weatherapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.Modifier
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -30,7 +23,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.weatherapp.network.dataclass.WeatherDao
 import com.example.weatherapp.network.dataclass.WeatherRepository
 import com.example.weatherapp.network.dataclass.WeatherRoomDatabase
 import com.example.weatherapp.ui.main.WeatherApiStatus
@@ -40,7 +32,6 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlinx.coroutines.CoroutineScope
 
 class MainActivity : ComponentActivity() {
 
@@ -70,6 +61,7 @@ fun WeatherApp(){
     val factory = WeatherViewModel.Factory(weatherRepo)
     val owner = LocalViewModelStoreOwner.current
     owner?.let {
+        //https://mahendranv.github.io/posts/viewmodel-store/
         val weatherViewModel: WeatherViewModel =
             ViewModelProvider(it, factory)[WeatherViewModel::class.java]
 
@@ -120,9 +112,7 @@ fun WeatherApp(){
                 WeatherNavHost(
                     navController = navController,
                     weatherViewModel = weatherViewModel,
-                    modifier = Modifier.padding(innerPadding),
-                    scaffoldState = scaffoldState,
-                    scope = scope
+                    modifier = Modifier.padding(innerPadding)
                 )
             }
         }
@@ -133,9 +123,7 @@ fun WeatherApp(){
 fun WeatherNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    weatherViewModel: WeatherViewModel = viewModel(),
-    scaffoldState: ScaffoldState,
-    scope: CoroutineScope
+    weatherViewModel: WeatherViewModel = viewModel()
 ){
     val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
