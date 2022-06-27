@@ -1,8 +1,12 @@
 package com.example.weatherapp
 
+import android.content.Context
+import android.location.Geocoder
+import android.location.LocationManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -11,10 +15,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,6 +39,8 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import java.util.*
+
 
 class MainActivity : ComponentActivity() {
 
@@ -47,7 +56,8 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun WeatherApp(){
+fun WeatherApp(
+){
     val allScreens = WeatherScreen.values().toList()
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
@@ -55,6 +65,8 @@ fun WeatherApp(){
     val backstackEntry = navController.currentBackStackEntryAsState()
     val currentScreen = WeatherScreen.fromRoute(backstackEntry.value?.destination?.route)
 
+    val geocoder = Geocoder(LocalContext.current, Locale.getDefault())
+    val locationManager = LocalContext.current.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val weatherDb = WeatherRoomDatabase.getDatabase(LocalContext.current)
     val weatherDao = weatherDb.itemDao()
     val weatherRepo = WeatherRepository(weatherDao)
@@ -94,7 +106,16 @@ fun WeatherApp(){
                 )
             },
             drawerGesturesEnabled = currentScreen != WeatherScreen.SearchUI,
-            drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp)
+            drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
+            modifier = Modifier
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.primary,
+                            MaterialTheme.colors.primaryVariant
+                        )
+                    )
+                )
         ) { innerPadding ->
             SwipeRefresh(
                 state = rememberSwipeRefreshState(weatherViewModel.isRefreshing),
@@ -112,7 +133,9 @@ fun WeatherApp(){
                 WeatherNavHost(
                     navController = navController,
                     weatherViewModel = weatherViewModel,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
+                    locationManager = locationManager,
+                    geocoder = geocoder
                 )
             }
         }
@@ -123,7 +146,9 @@ fun WeatherApp(){
 fun WeatherNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    weatherViewModel: WeatherViewModel = viewModel()
+    weatherViewModel: WeatherViewModel = viewModel(),
+    locationManager: LocationManager,
+    geocoder: Geocoder
 ){
     val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
@@ -154,7 +179,11 @@ fun WeatherNavHost(
                     onClick = { exp ->
                         weatherViewModel.searchAddress(exp)
                         navController.navigate(WeatherScreen.WeatherUI.name)
-                    }
+                    },
+                    locationManager = locationManager,
+                    onGetLocationClick = { exp -> weatherViewModel.setSelected(exp)
+                        navController.navigate(WeatherScreen.WeatherUI.name)},
+                    geocoder = geocoder
                 )
             }
         }
@@ -181,7 +210,7 @@ fun BottomNavigationBar(
         backgroundColor = MaterialTheme.colors.primaryVariant,
         modifier = Modifier.shadow(10.dp)
     ) {
-        allScreens.filter { tab -> tab != WeatherScreen.SearchUI }.forEach{
+        allScreens.forEach{
             BottomNavigationItem(
                 selected = it.name == currentScreen.name,
                 selectedContentColor = MaterialTheme.colors.onSurface,
