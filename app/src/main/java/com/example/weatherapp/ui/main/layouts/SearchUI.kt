@@ -1,5 +1,11 @@
 package com.example.weatherapp.ui.main.layouts
 
+import android.annotation.SuppressLint
+import android.location.Address
+import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,11 +23,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.weatherapp.R
 import com.example.weatherapp.network.dataclass.Prediction
 import com.example.weatherapp.network.dataclass.PredictionStructure
 import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.shouldShowRationale
 
 @Composable
 fun SearchUI(
@@ -30,6 +40,9 @@ fun SearchUI(
     onValueChange: (String) -> Unit,
     onClearClick: () -> Unit,
     onClick: (Prediction) -> Unit,
+    locationManager: LocationManager,
+    geocoder: Geocoder,
+    onGetLocationClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
     SearchScreen(
@@ -38,6 +51,9 @@ fun SearchUI(
         onValueChange = onValueChange,
         onClearClick = onClearClick,
         onClick = onClick,
+        locationManager = locationManager,
+        geocoder = geocoder,
+        onGetLocationClick = onGetLocationClick,
         modifier = modifier
     )
 }
@@ -49,6 +65,9 @@ fun SearchScreen(
     onValueChange: (String) -> Unit,
     onClearClick: () -> Unit,
     onClick: (Prediction) -> Unit,
+    locationManager: LocationManager,
+    geocoder: Geocoder,
+    onGetLocationClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -70,6 +89,9 @@ fun SearchScreen(
         )
         if(dataSource.isEmpty()){
             EmptyListMessage(
+                locationManager = locationManager,
+                geocoder = geocoder,
+                onGetLocationClick = onGetLocationClick,
                 modifier = Modifier
             )
         }
@@ -159,8 +181,13 @@ fun AutocompleteItem(
     }
 }
 
+@SuppressLint("MissingPermission")
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun EmptyListMessage(
+    locationManager: LocationManager,
+    geocoder: Geocoder,
+    onGetLocationClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -172,8 +199,31 @@ fun EmptyListMessage(
             text = stringResource(R.string.search_address_text),
             color = MaterialTheme.colors.onSurface
         )
+
+        val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (locationPermissionState.status.isGranted) {
+            val location: Location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)!!
+            val addresses: List<Address> = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+            val cityName: String = addresses[0].locality
+            Log.i("searchloc", cityName)
+            Column {
+                Button(onClick = { onGetLocationClick(cityName) }) {
+                    Text("Add current location",
+                        color = MaterialTheme.colors.onSurface)
+                }
+            }
+        } else {
+            Column {
+                Button(onClick = { locationPermissionState.launchPermissionRequest() }) {
+                    Text("Request permission",
+                        color = MaterialTheme.colors.onSurface)
+                }
+            }
+        }
     }
 }
+
+
 
 @Preview
 @Composable

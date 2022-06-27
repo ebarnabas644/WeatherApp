@@ -81,4 +81,6 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     //Gson
     implementation 'com.google.code.gson:gson:2.9.0'
+    //accompanist
+    implementation "com.google.accompanist:accompanist-permissions:0.24.11-rc"
 }

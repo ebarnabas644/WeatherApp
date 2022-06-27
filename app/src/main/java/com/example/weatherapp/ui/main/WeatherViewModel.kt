@@ -2,14 +2,14 @@ package com.example.weatherapp.ui.main
 
 import android.util.Log
 import androidx.compose.runtime.*
-import com.example.weatherapp.network.WeatherApi
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.network.AutocompleteApi
+import com.example.weatherapp.network.WeatherApi
 import com.example.weatherapp.network.dataclass.*
+import kotlinx.coroutines.launch
+
 
 enum class WeatherApiStatus { LOADING, ERROR, DONE }
 
