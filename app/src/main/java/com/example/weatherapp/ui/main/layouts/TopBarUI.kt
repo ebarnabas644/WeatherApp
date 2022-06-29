@@ -58,8 +58,9 @@ fun TopBarScreen(
             scope = scope,
             scaffoldState = scaffoldState)
         TitleBar(title = title)
-        AddFavouriteButton(
-            onClick = onSearchClick)
+        Spacer(modifier = Modifier.size(35.dp))
+        /*AddFavouriteButton(
+            onClick = onSearchClick)*/
     }
 }
 
