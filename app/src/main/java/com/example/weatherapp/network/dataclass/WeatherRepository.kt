@@ -1,55 +1,35 @@
 package com.example.weatherapp.network.dataclass
 
 import android.util.Log
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+
 //https://www.raywenderlich.com/24509368-repository-pattern-with-jetpack-compose
 class WeatherRepository(private val weatherDao: WeatherDao) {
 
     var result: Weather = Weather()
-    suspend fun getWeatherData(): List<Weather> = weatherDao.getItems()
+    fun weatherList(): Flow<List<Weather>> = weatherDao.getItems()
+    fun addressList(): Flow<List<String>> = weatherDao.getAddresses()
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    fun insertWeather(item: Weather) {
-        coroutineScope.launch(Dispatchers.IO) {
-            weatherDao.insert(item)
+    suspend fun insertWeather(item: Weather) {
+        weatherDao.insert(item)
+    }
+
+    suspend fun deleteWeather(address: String) {
+        weatherDao.delete(address)
+        Log.i("repo", "$address removed.")
+    }
+
+    suspend fun findByAddress(name: String): Weather {
+        val findWeather: Weather = weatherDao.findByAddress(name)
+        if(findWeather == null){
+            return Weather()
+        }
+        else {
+            return findWeather
         }
     }
 
-    fun deleteWeather(item: Weather) {
-        coroutineScope.launch(Dispatchers.IO) {
-            weatherDao.delete(item)
-        }
-        Log.i("repo", item.address.toString() + " removed.")
-    }
 
-    fun updateWeather(item: Weather){
-        coroutineScope.launch(Dispatchers.IO){
-            weatherDao.update(item)
-        }
-    }
-
-    suspend fun findByAddress(address: String){
-        coroutineScope.launch(Dispatchers.Main) {
-            val testResult = asyncFind(address).await()
-            if (testResult != null){
-                result = testResult
-            }
-            Log.i("repo", "Found: " + result.address.toString())
-        }
-    }
-
-    /*
-    suspend fun getWeatherData(){
-        coroutineScope.launch(Dispatchers.IO){
-            weatherData = weatherDao.getItems()
-        }
-    }*/
-
-    private fun asyncFind(address: String): Deferred<Weather?> =
-        coroutineScope.async(Dispatchers.IO) {
-            return@async weatherDao.findByAddress(address)
-        }
 }
