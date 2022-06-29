@@ -10,9 +10,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
@@ -77,6 +75,9 @@ fun WeatherApp(
         val weatherViewModel: WeatherViewModel =
             ViewModelProvider(it, factory)[WeatherViewModel::class.java]
 
+        val addressList by weatherViewModel.addressList.collectAsState(listOf())
+        val isRefreshing by weatherViewModel.isRefreshing.collectAsState()
+
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
@@ -99,7 +100,7 @@ fun WeatherApp(
             drawerBackgroundColor = MaterialTheme.colors.background,
             drawerContent = {
                 SideBarUI(
-                    dataSource = weatherViewModel.addressList,
+                    dataSource = addressList,
                     selectedAddress = weatherViewModel.selectedAddress,
                     onAddressSelection = { exp -> weatherViewModel.setSelected(exp) },
                     onRemoveClick = { exp -> weatherViewModel.removeAddress(exp) }
@@ -118,7 +119,7 @@ fun WeatherApp(
                 )
         ) { innerPadding ->
             SwipeRefresh(
-                state = rememberSwipeRefreshState(weatherViewModel.isRefreshing),
+                state = rememberSwipeRefreshState(isRefreshing),
                 onRefresh = { weatherViewModel.refresh() },
                 indicator = { state, trigger ->
                     SwipeRefreshIndicator(
@@ -150,9 +151,11 @@ fun WeatherNavHost(
     locationManager: LocationManager,
     geocoder: Geocoder
 ){
+    //https://stackoverflow.com/questions/69002018/why-a-new-viewmodel-is-created-in-each-compose-navigation-route
     val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
+    val autoCompleteText by weatherViewModel.autoCompleteText.collectAsState()
     NavHost(
         navController = navController,
         startDestination = WeatherScreen.WeatherUI.name,
@@ -173,7 +176,7 @@ fun WeatherNavHost(
             ) {
                 SearchUI(
                     dataSource = weatherViewModel.autocomplete.predictions,
-                    searchText = weatherViewModel.autocompleteText,
+                    searchText = autoCompleteText,
                     onValueChange = { exp -> weatherViewModel.updateAutocompleteList(exp) },
                     onClearClick = { weatherViewModel.resetAutofill() },
                     onClick = { exp ->
