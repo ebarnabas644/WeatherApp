@@ -1,5 +1,6 @@
 package com.example.weatherapp.network
 
+import com.example.weatherapp.network.dataclass.Predictions
 import com.example.weatherapp.network.dataclass.Weather
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

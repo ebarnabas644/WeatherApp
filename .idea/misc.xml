@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Egyetem/AndroidDev/WeatherApp/app/src/main/res/drawable/ic_wi_night_alt_snow.xml" value="0.1" />
+        <entry key="..\:/Egyetem/AndroidDev/WeatherApp/app/src/main/res/drawable/snow.xml" value="0.1" />
         <entry key="..\:/Egyetem/AndroidDev/WeatherApp/app/src/main/res/layout/activity_main.xml" value="0.2638888888888889" />
         <entry key="..\:/Egyetem/AndroidDev/WeatherApp/app/src/main/res/layout/fragment_main.xml" value="0.2212962962962963" />
       </map>
