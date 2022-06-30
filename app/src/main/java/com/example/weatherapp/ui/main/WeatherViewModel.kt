@@ -46,7 +46,12 @@ class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewM
         viewModelScope.launch {
             //weatherList = weatherRepository.weatherList
             addressList = weatherRepository.addressList()
-            setSelected(addressList.first()[0])
+            if(addressList.first().isEmpty()){
+                setSelected("Bremen")
+            }
+            else{
+                setSelected(addressList.first()[0])
+            }
         }
     }
 
@@ -54,7 +59,9 @@ class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewM
         viewModelScope.launch {
             weatherRepository.deleteWeather(addressToRemove)
             if(selectedAddress == addressToRemove){
-                setSelected(addressList.first()[0])
+                if(addressList.first().isNotEmpty()){
+                    setSelected(addressList.first()[0])
+                }
             }
         }
     }
