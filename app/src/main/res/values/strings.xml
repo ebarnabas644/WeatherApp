@@ -5,7 +5,7 @@
     <string name="min_max_temperature_display">%d°/%d°</string>
     <string name="temperature">&#160;%d°</string>
     <string name="sidebar_title">Favourites</string>
-    <string name="search_address_text">Enter location name</string>
+    <string name="search_address_text">Enter location name or get your location</string>
     <string name="navbar_today">Today</string>
     <string name="navbar_next_2_week">Next 14 day</string>
     <string name="navbar_search">Search</string>
