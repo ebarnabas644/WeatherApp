@@ -20,7 +20,12 @@ class WeatherRepository(private val weatherDao: WeatherDao) {
 
     suspend fun findByAddress(name: String): Weather {
         val findWeather: Weather = weatherDao.findByAddress(name)
-        return findWeather ?: Weather()
+        if(findWeather == null){
+            return Weather()
+        }
+        else {
+            return findWeather
+        }
     }
 
 
