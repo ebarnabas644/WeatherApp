@@ -1,5 +1,7 @@
 package com.example.weatherapp.ui.main.layouts
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,16 +11,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherapp.R
-import com.example.weatherapp.ui.main.WeatherViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 
@@ -75,6 +74,7 @@ fun SideBarScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AddressSelectionPanel(
     dataSource: List<String>,
@@ -85,13 +85,13 @@ fun AddressSelectionPanel(
 ){
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 10.dp),
-        modifier = modifier
+        modifier = modifier.fillMaxHeight()
     ){
-        items(items = dataSource){
+        items(items = dataSource, key = { it }){
                 item -> AddressSelectionRow(
             address = item,
             isSelected = item == selectedAddress,
-            modifier = modifier.clickable { onAddressSelection(item) },
+            modifier = modifier.animateItemPlacement(animationSpec = tween(600)).clickable { onAddressSelection(item) },
             onRemoveClick = onRemoveClick)
         }
     }
@@ -139,7 +139,7 @@ fun AddressSelectionRowPreview(){
 @Preview
 @Composable
 fun AddressSelectionPanelPreview(){
-    WeatherAppTheme() {
+    WeatherAppTheme {
         AddressSelectionPanel(
             dataSource = addressSelectionTestDatasource,
             selectedAddress = addressSelectionTestDatasource[1],
@@ -149,10 +149,10 @@ fun AddressSelectionPanelPreview(){
     }
 }
 
-@Preview()
+@Preview
 @Composable
 fun SideBarScreenPreview(){
-    WeatherAppTheme() {
+    WeatherAppTheme {
         SideBarScreen(
             dataSource = addressSelectionTestDatasource,
             selectedAddress = addressSelectionTestDatasource[2],

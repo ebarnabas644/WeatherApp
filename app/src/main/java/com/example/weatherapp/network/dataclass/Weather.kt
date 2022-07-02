@@ -11,7 +11,7 @@ data class Weather(
     @ColumnInfo(name = "longitude")
     val longitude: Double = 0.0,
 
-    @PrimaryKey()
+    @PrimaryKey
     val resolvedAddress: String = "",
 
     @ColumnInfo(name = "address")

@@ -21,17 +21,14 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.google.accompanist.permissions.rememberPermissionState
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.weatherapp.R
 import com.example.weatherapp.network.dataclass.Prediction
-import com.example.weatherapp.network.dataclass.PredictionStructure
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.shouldShowRationale
 
 @Composable
 fun SearchUI(
@@ -108,8 +105,7 @@ fun SearchScreen(
 fun SearchBar(
     searchText: String,
     onValueChange: (String) -> Unit,
-    onClearClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClearClick: () -> Unit
 ){
     TextField(
         value = searchText,
@@ -202,14 +198,24 @@ fun EmptyListMessage(
 
         val locationPermissionState = rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
         if (locationPermissionState.status.isGranted) {
-            val location: Location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)!!
-            val addresses: List<Address> = geocoder.getFromLocation(location.latitude, location.longitude, 1)
-            val cityName: String = addresses[0].locality
-            Log.i("searchloc", cityName)
-            Column {
-                Button(onClick = { onGetLocationClick(cityName) }) {
-                    Text("Add current location",
-                        color = MaterialTheme.colors.onSurface)
+            if(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER) != null) {
+                val location: Location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)!!
+                val addresses: List<Address> =
+                    geocoder.getFromLocation(location.latitude, location.longitude, 1)
+                val cityName: String = addresses[0].locality
+                Log.i("searchloc", cityName)
+                Column {
+                    Button(onClick = { onGetLocationClick(cityName) }) {
+                        Text(
+                            "Add current location",
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
+                }
+            }
+            else{
+                Column {
+                    Text("Location not avaiable on this device")
                 }
             }
         } else {
@@ -228,7 +234,7 @@ fun EmptyListMessage(
 @Preview
 @Composable
 fun AutocompleteItemPreview(){
-    WeatherAppTheme() {
+    WeatherAppTheme {
         /*AutocompleteItem(label = "Budapest", onClick = {})*/
     }
 }
@@ -236,7 +242,7 @@ fun AutocompleteItemPreview(){
 @Preview
 @Composable
 fun SearchBarPreview(){
-    WeatherAppTheme() {
+    WeatherAppTheme {
         SearchBar(searchText = "Buda", onValueChange = {}, onClearClick = {})
     }
 }
@@ -244,7 +250,7 @@ fun SearchBarPreview(){
 @Preview
 @Composable
 fun AutocompleteListPreview(){
-    MaterialTheme(){
+    MaterialTheme{
         AutocompleteList(dataSource = searchTestDatasource, onClick = {})
     }
 }

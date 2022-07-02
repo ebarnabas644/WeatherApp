@@ -2,7 +2,9 @@ package com.example.weatherapp.ui.main.layouts
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -65,7 +67,13 @@ fun WeatherScreen(
         PanelData(stringResource(R.string.windDirection_title), (LocalContext.current.resources.getString(R.string.wind_direction, (weather.current.winDirection ?: "N/A").toString())), iconId = R.drawable.ic_wi_wind_deg, rotation = (weather.current.winDirection ?: 0.0)),
         PanelData(stringResource(R.string.uvIndex_title), weather.current.uvIndex.toString(), iconId = R.drawable.ic_wi_day_sunny)
     )
-    val alpha: Float by animateFloatAsState(if (!isLoading) 1f else 0.0f)
+    val alpha: Float by animateFloatAsState(
+        targetValue =  if (!isLoading) 1f else 0.0f,
+        animationSpec = tween(
+            durationMillis = 500,
+            delayMillis = 0,
+            easing = LinearOutSlowInEasing
+        ))
     Column(modifier = modifier
         .verticalScroll(rememberScrollState())
         .background(

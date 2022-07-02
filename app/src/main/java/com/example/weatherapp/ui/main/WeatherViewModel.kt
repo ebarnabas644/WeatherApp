@@ -23,8 +23,8 @@ class WeatherViewModel(private val weatherRepository: WeatherRepository) : ViewM
     var selectedAddress by mutableStateOf("")
     lateinit var addressList: Flow<List<String>>
     private val _isRefreshing = MutableStateFlow(false)
-    lateinit var weatherList: Flow<List<Weather>>
-    private var databaseEmpty = true
+    //lateinit var weatherList: Flow<List<Weather>>
+    //private var databaseEmpty = true
 
     val isRefreshing: StateFlow<Boolean> = _isRefreshing
     val autoCompleteText: StateFlow<String> = _autocompleteText
