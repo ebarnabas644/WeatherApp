@@ -18,8 +18,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -85,7 +83,6 @@ fun WeatherApp(
                     TopBarUI(
                         scope = scope,
                         scaffoldState = scaffoldState,
-                        onAddClick = { navController.navigate(WeatherScreen.SearchUI.name) },
                         title = if (currentScreen == WeatherScreen.ForecastUI) weatherViewModel.selectedAddress else ""
                     )
                 }

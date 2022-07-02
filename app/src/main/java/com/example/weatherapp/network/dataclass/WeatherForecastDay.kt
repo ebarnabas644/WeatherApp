@@ -1,7 +1,6 @@
 package com.example.weatherapp.network.dataclass
 
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import com.example.weatherapp.ui.main.layouts.dayForecastTestDatasource
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
