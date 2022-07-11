@@ -51,9 +51,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// UI controller
 @Composable
 fun WeatherApp(
 ){
+    // Setting up dependencies
     val allScreens = WeatherScreen.values().toList()
     val navController = rememberNavController()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
@@ -140,6 +142,7 @@ fun WeatherApp(
     }
 }
 
+// Defining navigation host and navigation graph.
 @Composable
 fun WeatherNavHost(
     navController: NavHostController,
